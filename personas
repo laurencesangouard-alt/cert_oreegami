@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cartes d'Empathie — Eco-Locaux</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+
+        :root {
+            --green-dark:  #1b4332;
+            --green-mid:   #2d6a4f;
+            --green-light: #52b788;
+            --green-pale:  #d8f3dc;
+            --warm:        #f4a261;
+            --warm-pale:   #fde8d0;
+            --red:         #e76f51;
+            --red-pale:    #fde0d8;
+            --bg:          #f0faf4;
+            --surface:     #ffffff;
+            --surface-2:   #f6faf7;
+            --border:      #c8e6d0;
+            --text:        #1a2e1a;
+            --text-muted:  #4a6b52;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background:
+                radial-gradient(ellipse at 8% 15%,  rgba(82,183,136,.13) 0%, transparent 50%),
+                radial-gradient(ellipse at 92% 85%, rgba(244,162,97,.09) 0%, transparent 50%);
+            pointer-events: none; z-index: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 24px;
+            position: relative; z-index: 1;
+        }
+
+        /* ── HEADER ── */
+        header {
+            text-align: center;
+            padding: 48px 40px;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, var(--green-mid) 0%, var(--green-dark) 100%);
+            color: #fff;
+            border-radius: 20px;
+            box-shadow: 0 16px 48px rgba(27,67,50,.18);
+            position: relative; overflow: hidden;
+        }
+        header::after {
+            content: '🌿';
+            position: absolute; right: 44px; top: 50%;
+            transform: translateY(-50%);
+            font-size: 90px; opacity: .13;
+        }
+        header h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 2.8rem; font-weight: 400;
+            letter-spacing: -.02em; margin-bottom: 8px;
+        }
+        .subtitle { font-size: 1rem; opacity: .75; font-weight: 300; letter-spacing: .05em; }
+
+        /* ── TABS ── */
+        .tabs {
+            display: flex; justify-content: center;
+            gap: 10px; flex-wrap: wrap;
+            margin-bottom: 36px;
+        }
+        .tab {
+            padding: 11px 26px;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-size: .92rem; font-weight: 600;
+            color: var(--text-muted);
+            transition: all .22s ease;
+            box-shadow: 0 2px 8px rgba(45,106,79,.07);
+        }
+        .tab.active {
+            background: var(--green-mid);
+            border-color: var(--green-mid);
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(45,106,79,.28);
+        }
+        .tab:hover:not(.active) {
+            border-color: var(--green-light);
+            color: var(--green-mid);
+            transform: translateY(-2px);
+        }
+
+        /* ── EMPATHY MAP ── */
+        .empathy-map { display: none; animation: fadeUp .38s ease; }
+        .empathy-map.active { display: block; }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── PERSONA HEADER ── */
+        .persona-header {
+            display: flex; align-items: flex-start; gap: 32px;
+            margin-bottom: 28px;
+            background: var(--surface);
+            border-radius: 20px; padding: 32px;
+            box-shadow: 0 6px 24px rgba(45,106,79,.10);
+            border: 1px solid var(--border);
+        }
+        .persona-avatar {
+            width: 120px; height: 120px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--green-light), var(--green-dark));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 3.2rem; flex-shrink: 0;
+            box-shadow: 0 8px 24px rgba(45,106,79,.22);
+        }
+        .persona-info { flex: 1; }
+        .persona-info h2 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.9rem; font-weight: 400;
+            color: var(--green-mid); margin-bottom: 4px;
+        }
+        .persona-role {
+            font-size: .95rem; color: var(--text-muted);
+            font-weight: 500; margin-bottom: 14px;
+        }
+        .persona-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 14px; }
+        .tag {
+            padding: 4px 13px; border-radius: 20px;
+            font-size: .75rem; font-weight: 700; letter-spacing: .03em;
+        }
+        .tag-green { background: var(--green-pale); color: var(--green-dark); }
+        .tag-warm  { background: var(--warm-pale);  color: #7a3510; }
+        .tag-red   { background: var(--red-pale);   color: #832010; }
+        .tag-blue  { background: #dbeafe; color: #1e3a8a; }
+
+        /* KPIs row */
+        .kpis {
+            display: flex; flex-wrap: wrap; gap: 10px;
+            margin-bottom: 16px;
+        }
+        .kpi {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 12px; padding: 10px 16px;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .kpi-value {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.4rem; color: var(--green-mid); line-height: 1;
+        }
+        .kpi-label { font-size: .72rem; color: var(--text-muted); margin-top: 3px; text-align: center; }
+
+        .persona-quote {
+            background: var(--surface-2);
+            padding: 15px 20px;
+            border-radius: 12px;
+            font-style: italic;
+            color: var(--text);
+            border-left: 4px solid var(--warm);
+            font-size: .93rem; line-height: 1.65;
+        }
+
+        /* ── GRID ── */
+        .empathy-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px; margin-bottom: 36px;
+        }
+        .empathy-section {
+            background: var(--surface);
+            border-radius: 16px; padding: 22px;
+            box-shadow: 0 2px 10px rgba(45,106,79,.07);
+            border: 1px solid var(--border);
+            border-top: 4px solid var(--green-light);
+            transition: transform .22s ease, box-shadow .22s ease;
+        }
+        .empathy-section:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 28px rgba(45,106,79,.12);
+        }
+        .empathy-section.freins       { border-top-color: var(--red); }
+        .empathy-section.motivations  { border-top-color: var(--green-light); }
+        .empathy-section.opportunites {
+            border-top-color: var(--warm);
+            grid-column: 1 / -1;
+        }
+
+        .section-title {
+            display: flex; align-items: center; gap: 11px;
+            margin-bottom: 14px; padding-bottom: 11px;
+            border-bottom: 1px solid var(--border);
+        }
+        .section-icon { font-size: 1.4rem; }
+        h3 {
+            font-family: 'DM Sans', sans-serif;
+            font-size: .8rem; font-weight: 700;
+            letter-spacing: .09em; text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        ul.section-items { list-style: none; padding: 0; }
+        .section-item {
+            position: relative;
+            padding-left: 18px;
+            margin-bottom: 9px;
+            line-height: 1.6; font-size: .9rem;
+            color: var(--text);
+        }
+        .section-item::before {
+            content: "▸";
+            position: absolute; left: 0; top: 2px;
+            color: var(--green-light); font-size: .78rem;
+        }
+        .freins      .section-item::before { color: var(--red); }
+        .motivations .section-item::before { color: var(--green-mid); }
+        .opportunites .section-item::before { color: var(--warm); }
+
+        .badge-confirm {
+            display: inline-block;
+            background: var(--warm-pale); color: #7a3510;
+            font-size: .68rem; font-weight: 700;
+            padding: 1px 7px; border-radius: 6px;
+            margin-left: 5px; vertical-align: middle;
+            letter-spacing: .03em;
+        }
+        .badge-inf {
+            display: inline-block;
+            background: #ede9fe; color: #4c1d95;
+            font-size: .68rem; font-weight: 700;
+            padding: 1px 7px; border-radius: 6px;
+            margin-left: 5px; vertical-align: middle;
+            letter-spacing: .03em;
+        }
+
+        /* Opportunité cards */
+        .opp-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; }
+        .opp-card {
+            background: var(--surface-2);
+            border-radius: 11px; padding: 14px 16px;
+            border-left: 3px solid var(--warm);
+            line-height: 1.6; font-size: .88rem;
+        }
+        .opp-label {
+            font-size: .7rem; font-weight: 700;
+            letter-spacing: .06em; text-transform: uppercase;
+            color: var(--warm); margin-bottom: 5px;
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            text-align: center;
+            padding: 24px; margin-top: 36px;
+            background: linear-gradient(135deg, var(--green-mid), var(--green-dark));
+            color: rgba(255,255,255,.8);
+            border-radius: 16px; font-size: .86rem;
+        }
+        footer p + p { margin-top: 6px; opacity: .6; font-size: .78rem; }
+
+        @media (max-width: 768px) {
+            .empathy-grid { grid-template-columns: 1fr; }
+            .opp-grid     { grid-template-columns: 1fr; }
+            .empathy-section.opportunites { grid-column: 1; }
+            .persona-header { flex-direction: column; }
+            header h1 { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <header>
+        <h1>Cartes d'Empathie</h1>
+        <div class="subtitle">Modernisation de la Prospection · Eco-Locaux</div>
+    </header>
+
+    <div class="tabs">
+        <button class="tab active"  onclick="showMap('sebastien', this)">💼 Sébastien — Commercial</button>
+        <button class="tab"         onclick="showMap('equipe',    this)">👥 L'Équipe — Commerciaux</button>
+        <button class="tab"         onclick="showMap('dg',        this)">📊 Le DG — Décideur</button>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- PERSONA 1 — SÉBASTIEN MOREL · COMMERCIAL               -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <div id="sebastien" class="empathy-map active">
+        <div class="persona-header">
+            <div class="persona-avatar">🧑‍💼</div>
+            <div class="persona-info">
+                <h2>SÉBASTIEN MOREL</h2>
+                <div class="persona-role">Commercial Terrain · 2 ans d'ancienneté · Région : À confirmer</div>
+                <div class="persona-tags">
+                    <span class="tag tag-red">À risque — objectifs non atteints</span>
+                    <span class="tag tag-warm">Motivé, volontaire</span>
+                    <span class="tag tag-blue">Google Maps · Google Sheet · Word</span>
+                </div>
+                <div class="kpis">
+                    <div class="kpi"><span class="kpi-value">15-25</span><span class="kpi-label">prospects/jour<br>collectés</span></div>
+                    <div class="kpi"><span class="kpi-value">80-100</span><span class="kpi-label">emails<br>/semaine</span></div>
+                    <div class="kpi"><span class="kpi-value">15%</span><span class="kpi-label">taux<br>d'ouverture</span></div>
+                    <div class="kpi"><span class="kpi-value">3%</span><span class="kpi-label">taux de<br>réponse</span></div>
+                    <div class="kpi"><span class="kpi-value">5</span><span class="kpi-label">RDV<br>/mois</span></div>
+                    <div class="kpi"><span class="kpi-value">1-2</span><span class="kpi-label">contrats<br>/mois</span></div>
+                </div>
+                <div class="persona-quote">
+                    "C'est le boulot d'un robot, pas d'un commercial. Je suis convaincu que si on m'outille correctement, je peux doubler le CA."
+                </div>
+            </div>
+        </div>
+
+        <div class="empathy-grid">
+
+            <div class="empathy-section">
+                <div class="section-title"><div class="section-icon">🧠</div><h3>Ce que je pense et ressens</h3></div>
+                <ul class="section-items">
+                    <li class="section-item">J'ai peur de me faire virer parce que je n'atteins pas mes objectifs — pas par manque d'effort, mais par manque d'outils.</li>
+                    <li class="section-item">Je pense passer 50% de mon temps à saisir des données au lieu de vendre.</li>
+                    <li class="section-item">Je me sens démotivé par des tâches répétitives et sans valeur ("copier-coller", "boulot d'un robot").</li>
+                    <li class="section-item">Je suis frustré de ne pas savoir quels prospects travailler en priorité — je manque de méthode de scoring.</li>
+                    <li class="section-item">Je suis convaincu que je pourrais doubler le CA si j'avais les bons outils.</li>
+                    <li class="section-item">Je ne me sens pas toujours légitime en rendez-vous, par manque d'arguments et de données sur le prospect.</li>
+                </ul>
+            </div>
+
+            <div class="empathy-section">
+                <div class="section-title"><div class="section-icon">👄</div><h3>Ce que je dis et fais</h3></div>
+                <ul class="section-items">
+                    <li class="section-item">Je cherche manuellement des prospects sur Google Maps (ex : "Boulangerie + Ville"), un par un.</li>
+                    <li class="section-item">Je copie-colle les coordonnées dans un Google Sheet partagé (un onglet par commercial).</li>
+                    <li class="section-item">J'envoie 80 à 100 emails par semaine depuis un template Word générique — sans personnalisation.</li>
+                    <li class="section-item">Je passe 15 à 20 appels sortants par jour sans système de priorisation.</li>
+                    <li class="section-item">Je gère mes RDV sur Google Calendar, déconnecté du reste de mes outils.</li>
+                    <li class="section-item">Je m'engage à doubler le CA si on me donne des outils adaptés — engagement verbal explicite au DG.</li>
+                </ul>
+            </div>
+
+            <div class="empathy-section">
+                <div class="section-title"><div class="section-icon">👁️</div><h3>Ce que je vois</h3></div>
+                <ul class="section-items">
+                    <li class="section-item">Mes 3 collègues font exactement la même chose — la douleur est partagée sur toute l'équipe.</li>
+                    <li class="section-item">Le Google Sheet est notre seul CRM : basique, manuel, non fiable, sans alertes ni historique structuré.</li>
+                    <li class="section-item">Amélie (3 mois d'ancienneté) galère encore plus, sans méthode ni outil pour démarrer.</li>
+                    <li class="section-item">Mes emails génériques génèrent un taux de réponse de 3% — la grande majorité est ignorée ou en spam.</li>
+                    <li class="section-item">Le DG s'absente et la prospection ralentit : tout repose sur les individus, aucun process automatisé.</li>
+                </ul>
+            </div>
+
+            <div class="empathy-section">
+                <div class="section-title"><div class="section-icon">👂</div><h3>Ce que j'entends</h3></div>
+                <ul class="section-items">
+                    <li class="section-item">Le DG est exigeant, met la pression sur les chiffres — Sébastien ressent le risque de son poste.</li>
+                    <li class="section-item">Le DG veut donner plus d'autonomie à l'équipe pour n'intervenir que sur les gros deals.</li>
+                    <li class="section-item">L'équipe veut un outil simple : "pas une usine à gaz".</li>
+                    <li class="section-item">Le DG parle de scoring par type de client pour mieux prioriser les cibles.</li>
+                    <li class="section-item"><span class="badge-confirm">À confirmer</span> Sébastien entend-il parler d'outils concurrents (Lemlist, La Growth Machine…) dans son réseau ?</li>
+                </ul>
+            </div>
+
+            <div class="empathy-section freins">
+                <div class="section-title"><div class="section-icon">❌</div><h3>Mes freins</h3></div>
+                <ul class="section-items">
+                    <li class="section-item"><strong>50% du temps perdu</strong> en collecte manuelle sur Google Maps + copier-coller dans Google Sheet.</li>
+                    <li class="section-item"><strong>Emails non personnalisés</strong> : taux de réponse de 3%, mails "pas terribles" de son propre aveu.</li>
+                    <li class="section-item"><strong>Zéro scoring</strong> : impossible de savoir quel prospect prioriser en premier, ni selon quel critère.</li>
+                    <li class="section-item"><strong>Manque d'arguments et de données</strong> sur les prospects avant les appels et les RDV.</li>
+                    <li class="section-item"><strong>Outils déconnectés</strong> : Google Sheet + Calendar + Word = aucune vue unifiée du pipeline.</li>
+                    <li class="section-item"><strong>Pression psychologique</strong> : peur du licenciement faute d'objectifs atteints dans des conditions non équipées.</li>
+                </ul>
+            </div>
+
+            <div class="empathy-section motivations">
+                <div class="section-title"><div class="section-icon">✅</div><h3>Mes motivations</h3></div>
+                <ul class="section-items">
+                    <li class="section-item">Passer plus de temps avec les clients — c'est là que se crée vraiment la valeur pour lui.</li>
+                    <li class="section-item">Déléguer la recherche du "bon" client à un outil intelligent pour se concentrer sur la relation.</li>
+                    <li class="section-item">Avoir des emails personnalisés qui génèrent de vraies réponses et des RDV qualifiés.</li>
+                    <li class="section-item">Savoir quels prospects travailler en premier grâce à un scoring automatique.</li>
+                    <li class="section-item">Doubler le CA — engagement personnel fort et levier de sécurisation de son poste.</li>
+                    <li class="section-item">Être perçu comme un commercial professionnel et bien préparé par ses prospects.</li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- PERSONA 2 — L'ÉQUIPE COMMERCIALE                       -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <div id="equipe" class="empathy-map">
+        <div class="persona-header">
+            <div class="persona-avatar">👥</div>
+            <div class="persona-info">
+                <h2>L'ÉQUIPE COMMERCIALE</h2>
+                <div class="persona-role">4 commerciaux terrain · 4 régions : Lyon, Paris, Marseille, Lille</div>
+                <div class="persona-tags">
+                    <span class="tag tag-green">Sébastien Morel — 2 ans</span>
+                    <span class="tag tag-green">Nadia</span>
+                    <span class="tag tag-green">L'homme au bon réseau</span>
+                    <span class="tag tag-warm">Amélie — 3 mois</span>
+                </div>
+                <div class="persona-quote">
+                    "On rencontre tous les mêmes problèmes. On passe trop de temps à saisir des données. Ce n'est pas pour ça qu'on est commerciaux."
+                </div>
+            </div>
+        </div>
+
+        <div class="empathy-grid">
+
+            <div class="empathy-section">
+                <div class="section-title"><div class="section-icon">🧠</div><h3>Ce que l'équipe pense et ressent</h3></div>
+                <ul class="section-items">
+                    <li class="section-item">Frustrée de passer la majorité du temps sur des tâches administratives sans valeur commerciale.</li>
+                    <li class="section-item">Démotivée par des méthodes "à l'ancienne" dans un contexte où les outils modernes existent.</li>
+                    <li class="section-item">Sentiment d'inégalité : certains s'appuient sur leur réseau (plus efficace), d'autres n'ont rien. <span class="badge-inf">Inférence</span></li>
+                    <li class="section-item">La frustration est telle que le changement sera le bienvenu — faible résistance attendue.</li>
+                    <li class="section-item"><span class="badge-confirm">À confirmer</span> Les 4 profils ont-ils le même niveau de motivation et d'adoption tech ? (Sébastien vs. "l'homme qui ne fout pas grand-chose")</li>
+                </ul>
+            </div>
+
+            <div class="empathy-section">
+                <div class="section-title"><div class="section-icon">👄</div><h3>Ce que l'équipe dit et fait</h3></div>
+                <ul class="section-items">
+                    <li class="section-item">Tous utilisent le même process manuel : Google Maps → Google Sheet → Template Word → Google Calendar.</li>
+                    <li class="section-item">Pas de méthodologie partagée : chaque commercial improvise sa propre organisation.</li>
+                    <li class="section-item">Pas d'outils de CRM : un onglet par commercial dans un Google Sheet commun.</li>
+                    <li class="section-item">Amélie (3 mois) doit tout apprendre seule — onboarding inexistant. <span class="badge-inf">Inférence</span></li>
+                    <li class="section-item">Sandrine (assistante) gère la mise en forme des devis — les commerciaux ne construisent pas les offres.</li>
+                </ul>
+            </div>
+
+            <div class="empathy-section">
+                <div class="section-title"><div class="section-icon">👁️</div><h3>Ce que l'équipe voit</h3></div>
+                <ul class="section-items">
+                    <li class="section-item">Pas d'alerte, pas de tableau de bord : quand le DG s'absente, la prospection ralentit faute de pilotage.</li>
+                    <li class="section-item">30% des clients entrent par recommandation — preuve que le bouche-à-oreille supplée l'inefficacité de la prospection froide.</li>
+                    <li class="section-item">Les auditeurs (Thierry, Léa) ne se déplacent pas chez les clients — la relation client repose entièrement sur les commerciaux.</li>
+                    <li class="section-item">Aucun process de relance structuré : les opportunités se perdent entre les mailles.</li>
+                    <li class="section-item">Le DG veut monter en gamme sur les gros deals — la prospection de volume doit fonctionner sans lui.</li>
+                </ul>
+            </div>
+
+            <div class="empathy-section">
+                <div class="section-title"><div class="section-icon">👂</div><h3>Ce que l'équipe entend</h3></div>
+                <ul class="section-items">
+                    <li class="section-item">Le DG est exigeant et met la pression sur les chiffres — il est conscient que l'équipe est frustrée.</li>
+                    <li class="section-item">Le DG parle d'un seuil au-dessus duquel il interviendrait lui-même sur les gros deals.</li>
+                    <li class="section-item">Budget limité : la solution doit être simple, économique, adoptable rapidement.</li>
+                    <li class="section-item">"Pas une usine à gaz" — message répété par le DG et repris par l'équipe.</li>
+                    <li class="section-item"><span class="badge-confirm">À confirmer</span> Les commerciaux reçoivent-ils des formations ou briefings métier sur les aides CEE / crédit d'impôt ?</li>
+                </ul>
+            </div>
+
+            <div class="empathy-section freins">
+                <div class="section-title"><div class="section-icon">❌</div><h3>Freins collectifs</h3></div>
+                <ul class="section-items">
+                    <li class="section-item"><strong>Aucun process ni méthodologie</strong> : chaque commercial invente sa propre organisation sans standard commun.</li>
+                    <li class="section-item"><strong>Outils inadaptés</strong> : Google Sheet ≠ CRM. Pas de pipeline, pas d'alertes, pas d'historique structuré.</li>
+                    <li class="section-item"><strong>Dépendance au DG</strong> : sans pilotage actif, la machine s'arrête — pas d'autonomie collective.</li>
+                    <li class="section-item"><strong>Hétérogénéité des profils</strong> : certains s'appuient sur leur réseau, d'autres sur la prospection froide — pas de socle commun.</li>
+                    <li class="section-item"><strong>Onboarding inexistant</strong> : Amélie (3 mois) doit se former au process le plus inefficace du marché. <span class="badge-inf">Inférence</span></li>
+                    <li class="section-item"><strong>Risque d'adoption inégale</strong> : le profil "qui ne fout pas grand-chose" pourrait résister au changement. <span class="badge-inf">Inférence</span></li>
+                </ul>
+            </div>
+
+            <div class="empathy-section motivations">
+                <div class="section-title"><div class="section-icon">✅</div><h3>Motivations collectives</h3></div>
+                <ul class="section-items">
+                    <li class="section-item">Libérer du temps pour être avec les clients — unanimement exprimé par l'équipe.</li>
+                    <li class="section-item">Avoir des arguments solides et des données fiables à chaque appel ou RDV.</li>
+                    <li class="section-item">Ne plus dépendre du DG pour continuer à prospecter en son absence.</li>
+                    <li class="section-item">Bénéficier d'un onboarding structuré pour les nouveaux (Amélie en tête). <span class="badge-inf">Inférence</span></li>
+                    <li class="section-item">Être reconnus comme des professionnels organisés — pas des "robots copier-coller".</li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <!-- PERSONA 3 — LE DG · DÉCIDEUR                          -->
+    <!-- ═══════════════════════════════════════════════════════ -->
+    <div id="dg" class="empathy-map">
+        <div class="persona-header">
+            <div class="persona-avatar">🎯</div>
+            <div class="persona-info">
+                <h2>LE DG (Marc D.)</h2>
+                <div class="persona-role">Directeur Général · Tient lieu de Directeur Commercial · Ingénieur de formation · Ex-Engie</div>
+                <div class="persona-tags">
+                    <span class="tag tag-green">Décideur & acheteur</span>
+                    <span class="tag tag-warm">Budget limité</span>
+                    <span class="tag tag-blue">Google Drive · Airtable · Google Sheet</span>
+                    <span class="tag tag-red">Pas de délégation commerciale structurée</span>
+                </div>
+                <div class="persona-quote">
+                    "Quand je m'absente une semaine, la prospection ralentit. Je veux que mon équipe soit autonome — et n'intervenir que sur les gros deals."
+                </div>
+            </div>
+        </div>
+
+        <div class="empathy-grid">
+
+            <div class="empathy-section">
+                <div class="section-title"><div class="section-icon">🧠</div><h3>Ce que je pense et ressens</h3></div>
+                <ul class="section-items">
+                    <li class="section-item">Je suis conscient que mon équipe est frustrée et que les conditions de travail sont insuffisantes.</li>
+                    <li class="section-item">Je me sens trop central dans le processus commercial — si je m'arrête, tout ralentit.</li>
+                    <li class="section-item">Je fais confiance à Sébastien : son engagement à doubler le CA m'a convaincu d'investir.</li>
+                    <li class="section-item">Je veux du ROI rapide, pas une transformation longue et coûteuse.</li>
+                    <li class="section-item">Je crains un outil trop complexe que mon équipe n'utilisera pas. <span class="badge-inf">Inférence</span></li>
+                    <li class="section-item">Je veux me concentrer sur les gros deals et déléguer le volume — c'est une vraie évolution de mon rôle.</li>
+                </ul>
+            </div>
+
+            <div class="empathy-section">
+                <div class="section-title"><div class="section-icon">👄</div><h3>Ce que je dis et fais</h3></div>
+                <ul class="section-items">
+                    <li class="section-item">J'ai initié la démarche en cherchant un prestataire externe pour moderniser la prospection.</li>
+                    <li class="section-item">Je fixe les critères : simple, abordable, No-Code, intégrable avec Airtable/Google.</li>
+                    <li class="section-item">Je refuse explicitement les solutions type Salesforce : "usine à gaz, trop chère et complexe".</li>
+                    <li class="section-item">Je pilote directement les commerciaux, faute de Directeur Commercial dédié.</li>
+                    <li class="section-item">Je capitalise sur mon réseau et mon expertise Engie pour décrocher des deals complexes.</li>
+                    <li class="section-item">Je veux définir un seuil de deal au-delà duquel j'interviens personnellement.</li>
+                </ul>
+            </div>
+
+            <div class="empathy-section">
+                <div class="section-title"><div class="section-icon">👁️</div><h3>Ce que je vois</h3></div>
+                <ul class="section-items">
+                    <li class="section-item">4 commerciaux qui perdent ~50% de leur temps sur de la saisie manuelle sans valeur.</li>
+                    <li class="section-item">30% de clients entrent par recommandation — mon réseau compense la faiblesse de la prospection froide.</li>
+                    <li class="section-item">Sébastien est le profil le plus motivé et le plus fiable — il peut être un levier de transformation.</li>
+                    <li class="section-item">Un profil dans l'équipe qui n'est pas suffisamment actif — risque de traîne. <span class="badge-inf">Inférence</span></li>
+                    <li class="section-item">Amélie (3 mois) est à former — un outil bien pensé peut accélérer son onboarding.</li>
+                    <li class="section-item">Eco-Locaux a un vrai avantage concurrentiel (expertise CEE, satisfaction client, proximité terrain) sous-exploité en prospection.</li>
+                </ul>
+            </div>
+
+            <div class="empathy-section">
+                <div class="section-title"><div class="section-icon">👂</div><h3>Ce que j'entends</h3></div>
+                <ul class="section-items">
+                    <li class="section-item">Mon équipe me dit qu'elle est frustrée — la demande de changement est unanime.</li>
+                    <li class="section-item">Sébastien m'a dit qu'il pouvait doubler le CA avec les bons outils — je l'ai pris au mot.</li>
+                    <li class="section-item">Des prestataires tech me proposent souvent des solutions trop complexes ou trop chères.</li>
+                    <li class="section-item"><span class="badge-confirm">À confirmer</span> Le DG reçoit-il des retours directs des prospects sur la qualité des prises de contact de ses commerciaux ?</li>
+                    <li class="section-item"><span class="badge-confirm">À confirmer</span> Y a-t-il une pression de la part d'investisseurs ou d'associés sur les objectifs de croissance ?</li>
+                </ul>
+            </div>
+
+            <div class="empathy-section freins">
+                <div class="section-title"><div class="section-icon">❌</div><h3>Mes freins</h3></div>
+                <ul class="section-items">
+                    <li class="section-item"><strong>Budget limité</strong> : exclut toute solution SaaS coûteuse ou nécessitant des licences multiples.</li>
+                    <li class="section-item"><strong>Risque d'adoption</strong> : une interface complexe sera abandonnée par des commerciaux non-techniques.</li>
+                    <li class="section-item"><strong>Dépendance à sa propre expertise</strong> : l'outil doit fonctionner même sans lui — et sans son réseau.</li>
+                    <li class="section-item"><strong>Hétérogénéité d'équipe</strong> : gérer un profil peu actif tout en outillant les plus motivés. <span class="badge-inf">Inférence</span></li>
+                    <li class="section-item"><strong>RGPD / conformité</strong> : les données Google Maps sont-elles exploitables librement pour la prospection B2B ? <span class="badge-confirm">À confirmer</span></li>
+                    <li class="section-item"><strong>Scoring prospects</strong> : il veut un scoring par type de client mais n'a pas de critères formalisés à ce stade. <span class="badge-confirm">À confirmer</span></li>
+                </ul>
+            </div>
+
+            <div class="empathy-section motivations">
+                <div class="section-title"><div class="section-icon">✅</div><h3>Mes motivations</h3></div>
+                <ul class="section-items">
+                    <li class="section-item">Rendre son équipe autonome : prospecter et relancer sans qu'il ait besoin d'être là.</li>
+                    <li class="section-item">Avoir une vision globale en temps réel du pipeline sans réunions de suivi chronophages.</li>
+                    <li class="section-item">Multiplier le volume de prospects contactés sans augmenter les effectifs ni le budget.</li>
+                    <li class="section-item">Pouvoir scorer et prioriser les cibles pour concentrer les efforts sur les clients à fort potentiel.</li>
+                    <li class="section-item">Libérer du temps pour se concentrer sur les gros deals et son réseau stratégique.</li>
+                    <li class="section-item">ROI visible rapidement : rentabiliser l'outil en quelques semaines, pas en plusieurs trimestres.</li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+
+    <footer>
+        <p>Cartes d'empathie · Eco-Locaux · Automatisation de la Force de Vente</p>
+        <p>Basé sur les entretiens réels avec Sébastien Morel (commercial) et le DG · À enrichir par des sessions de validation</p>
+    </footer>
+
+</div>
+
+<script>
+    function showMap(id, btn) {
+        document.querySelectorAll('.empathy-map').forEach(m => m.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+    }
+</script>
+</body>
+</html>
