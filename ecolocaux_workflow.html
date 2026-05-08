@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eco-Locaux · Workflow MVP</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Lora:ital,wght@0,400;0,500;1,400&display=swap');
+
+:root {
+  --ink:         #12120f;
+  --forest:      #1a3a2a;
+  --pine:        #2a5c42;
+  --sage:        #4a9265;
+  --mint:        #a8d5b5;
+  --cream:       #f5f1ea;
+  --paper:       #fdfcf9;
+  --warm-off:    #f0ebe0;
+  --amber:       #d4872a;
+  --amber-pale:  #faf0dc;
+  --amber-dark:  #8a5210;
+  --rust:        #b83c1a;
+  --rust-pale:   #fceee9;
+  --cobalt:      #1e4fa8;
+  --cobalt-pale: #e8eef9;
+  --cobalt-dark: #0f2d6b;
+  --supa:        #3ecf8e;
+  --supa-dark:   #0a6b47;
+  --supa-pale:   #e6faf3;
+  --border:      #d8d0c0;
+  --border-l:    #e8e2d8;
+  --muted:       #6b7060;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Lora', Georgia, serif;
+  background: var(--cream);
+  color: var(--ink);
+  min-height: 100vh;
+  padding: 48px 32px 80px;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)' opacity='.04'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 0;
+}
+
+.page { max-width: 1100px; margin: 0 auto; position: relative; z-index: 1; }
+
+/* ── MASTHEAD ── */
+.masthead {
+  display: grid; grid-template-columns: 1fr auto;
+  align-items: end; gap: 24px;
+  margin-bottom: 40px; padding-bottom: 28px;
+  border-bottom: 2px solid var(--ink);
+}
+.masthead-eyebrow {
+  font-family: 'Syne', sans-serif; font-size: .68rem; font-weight: 700;
+  letter-spacing: .18em; text-transform: uppercase;
+  color: var(--sage); margin-bottom: 10px;
+  display: flex; align-items: center; gap: 10px;
+}
+.masthead-eyebrow::before { content: ''; display: block; width: 28px; height: 2px; background: var(--sage); }
+.masthead-title {
+  font-family: 'Syne', sans-serif; font-size: 2.6rem; font-weight: 800;
+  line-height: 1.1; letter-spacing: -.025em; color: var(--forest);
+}
+.masthead-subtitle { font-size: .95rem; color: var(--muted); margin-top: 8px; font-style: italic; line-height: 1.6; }
+.masthead-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+.meta-pill {
+  font-family: 'Syne', sans-serif; font-size: .65rem; font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase;
+  padding: 4px 12px; border-radius: 20px;
+  background: var(--forest); color: var(--mint);
+}
+.meta-stack {
+  display: flex; align-items: center; gap: 6px;
+  font-family: 'Syne', sans-serif; font-size: .63rem; font-weight: 600;
+  color: var(--muted);
+}
+.stack-chip {
+  background: var(--supa); color: var(--supa-dark);
+  font-family: 'Syne', sans-serif; font-size: .6rem; font-weight: 800;
+  padding: 2px 7px; border-radius: 4px; letter-spacing: .05em;
+}
+.meta-stat { font-family: 'Syne', sans-serif; font-size: .68rem; color: var(--muted); text-align: right; }
+
+/* ── LEGEND ── */
+.legend-bar {
+  display: flex; gap: 16px; flex-wrap: wrap; align-items: center;
+  padding: 12px 20px; background: var(--paper);
+  border-radius: 10px; border: 1px solid var(--border); margin-bottom: 40px;
+}
+.leg-title { font-family: 'Syne', sans-serif; font-size: .62rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.leg-sep { color: var(--border); }
+.leg-group { display: flex; gap: 14px; flex-wrap: wrap; }
+.leg-item { display: flex; align-items: center; gap: 6px; font-family: 'Syne', sans-serif; font-size: .72rem; font-weight: 600; color: var(--ink); }
+.leg-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.ld-must   { background: var(--sage); }
+.ld-should { background: var(--amber); }
+.ld-could  { background: var(--cobalt); }
+.ld-v2     { background: var(--rust); }
+
+/* ── SECTION NAV BAR ── */
+.section-nav {
+  display: flex; gap: 6px; flex-wrap: wrap;
+  margin-bottom: 40px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 6px;
+  font-family: 'Syne', sans-serif; font-size: .63rem; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase;
+  padding: 5px 12px; border-radius: 6px;
+  background: var(--paper); border: 1px solid var(--border-l);
+  color: var(--muted); text-decoration: none;
+  transition: background .15s, color .15s;
+}
+.nav-item:hover { background: var(--forest); color: var(--mint); }
+.nav-num { color: var(--mint); font-size: .7rem; }
+
+/* ── SECTION HEADER ── */
+.section-header {
+  display: flex; align-items: center; gap: 14px;
+  margin: 52px 0 20px;
+  scroll-margin-top: 20px;
+}
+.section-num {
+  font-family: 'Syne', sans-serif; font-size: 3rem; font-weight: 800;
+  color: var(--mint); line-height: 1; letter-spacing: -.04em;
+}
+.section-info { flex: 1; }
+.section-name {
+  font-family: 'Syne', sans-serif; font-size: 1.15rem; font-weight: 800;
+  color: var(--forest); text-transform: uppercase; letter-spacing: .07em;
+}
+.section-sub { font-size: .82rem; color: var(--muted); font-style: italic; margin-top: 3px; }
+.priority-badge {
+  font-family: 'Syne', sans-serif; font-size: .65rem; font-weight: 800;
+  letter-spacing: .08em; text-transform: uppercase;
+  padding: 5px 14px; border-radius: 20px; flex-shrink: 0;
+}
+.pb-must   { background: #eef7f1; color: var(--pine); border: 1px solid var(--mint); }
+.pb-should { background: var(--amber-pale); color: var(--amber-dark); border: 1px solid #f0d090; }
+.pb-could  { background: var(--cobalt-pale); color: var(--cobalt-dark); border: 1px solid #b0c4f0; }
+
+/* ── FUNC NAME ── */
+.func-name {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--forest); color: var(--mint);
+  font-family: 'Syne', sans-serif; font-size: .75rem; font-weight: 700; letter-spacing: .04em;
+  padding: 6px 16px; border-radius: 6px; margin-bottom: 14px;
+}
+
+/* ── WORKFLOW TABLE ── */
+.wf-table {
+  width: 100%; border-collapse: collapse;
+  margin-bottom: 8px; font-size: .79rem;
+}
+.wf-table thead th {
+  font-family: 'Syne', sans-serif; font-size: .59rem; font-weight: 800;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
+  padding: 8px 10px; border-bottom: 1.5px solid var(--border);
+  text-align: left; background: var(--paper); white-space: nowrap;
+}
+.wf-table tbody tr { border-bottom: 1px solid var(--border-l); }
+.wf-table tbody tr:hover td { background: var(--warm-off); }
+.wf-table td { padding: 9px 10px; vertical-align: top; line-height: 1.55; background: var(--paper); }
+
+/* Actor pill */
+.actor {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-family: 'Syne', sans-serif; font-size: .63rem; font-weight: 700;
+  padding: 2px 8px; border-radius: 4px; white-space: nowrap;
+}
+.a-human  { background: var(--amber-pale); color: var(--amber-dark); }
+.a-system { background: #eef7f1; color: var(--pine); }
+.a-ia     { background: var(--cobalt-pale); color: var(--cobalt-dark); }
+.a-dir    { background: var(--rust-pale); color: #7a2510; }
+
+/* Prio badge inline */
+.prio {
+  display: inline-block;
+  font-family: 'Syne', sans-serif; font-size: .6rem; font-weight: 800;
+  padding: 2px 7px; border-radius: 4px;
+}
+.p-must   { background: #eef7f1; color: var(--pine); }
+.p-should { background: var(--amber-pale); color: var(--amber-dark); }
+.p-could  { background: var(--cobalt-pale); color: var(--cobalt-dark); }
+.p-v2     { background: var(--rust-pale); color: var(--rust); }
+
+/* Mode badge */
+.mode {
+  font-family: 'Syne', sans-serif; font-size: .6rem; font-weight: 700;
+  padding: 2px 7px; border-radius: 4px;
+}
+.m-auto { background: #eef7f1; color: var(--pine); }
+.m-man  { background: var(--warm-off); color: var(--muted); }
+
+/* Tool chips */
+.tools { display: flex; flex-wrap: wrap; gap: 4px; }
+.chip {
+  font-family: 'Syne', sans-serif; font-size: .59rem; font-weight: 800;
+  padding: 2px 7px; border-radius: 4px; white-space: nowrap;
+}
+.ch-supa  { background: var(--supa); color: var(--supa-dark); }
+.ch-gm    { background: #e8f0fe; color: #1a56b0; }
+.ch-claude{ background: var(--cobalt-pale); color: var(--cobalt-dark); }
+.ch-make  { background: #f3ebff; color: #5b21b6; }
+.ch-gcal  { background: #fde8e8; color: #7a2510; }
+.ch-gmaps { background: #e6f4ea; color: #1a6b3a; }
+
+/* V2 tag */
+.v2-badge {
+  display: inline-flex; align-items: center;
+  font-family: 'Syne', sans-serif; font-size: .58rem; font-weight: 800;
+  letter-spacing: .08em; padding: 1px 7px; border-radius: 4px;
+  background: var(--rust-pale); color: var(--rust);
+  border: 1px solid #f5c0b0;
+}
+
+/* Constraint callout */
+.constraint {
+  display: flex; align-items: flex-start; gap: 10px;
+  background: var(--supa-pale);
+  border: 1px solid #b0e8d0;
+  border-radius: 8px; padding: 10px 14px;
+  font-size: .8rem; line-height: 1.5; color: var(--supa-dark);
+  margin: 8px 0;
+}
+.constraint-icon { font-size: .85rem; flex-shrink: 0; margin-top: 1px; }
+
+/* Warning block */
+.warn {
+  display: flex; align-items: flex-start; gap: 10px;
+  background: var(--amber-pale); border: 1px solid #f0d090;
+  border-radius: 8px; padding: 10px 14px;
+  font-size: .78rem; line-height: 1.5; color: var(--amber-dark);
+  margin: 8px 0;
+}
+.warn-icon { font-size: .85rem; flex-shrink: 0; margin-top: 1px; }
+
+/* ── DETAIL CARDS (for UX + timing) ── */
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 10px 0; }
+.detail-full { grid-column: 1 / -1; }
+.card {
+  background: var(--paper); border: 1px solid var(--border-l);
+  border-radius: 10px; overflow: hidden;
+}
+.card-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 14px; border-bottom: 1px solid var(--border-l);
+  background: var(--warm-off);
+}
+.card-icon { font-size: .85rem; flex-shrink: 0; }
+.card-label {
+  font-family: 'Syne', sans-serif; font-size: .62rem; font-weight: 800;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
+}
+.card-body { padding: 12px 14px; }
+.card-ux .card-head   { border-left: 3px solid var(--amber); }
+.card-time .card-head { border-left: 3px solid var(--rust); }
+
+.ux-table { width: 100%; border-collapse: collapse; font-size: .79rem; }
+.ux-table td { padding: 6px 8px; border-bottom: 1px solid var(--border-l); vertical-align: top; line-height: 1.5; }
+.ux-table tr:last-child td { border-bottom: none; }
+.ux-table td:first-child { font-weight: 500; width: 55%; }
+.ux-table td:last-child  { color: var(--muted); font-style: italic; width: 45%; }
+.ux-head td { font-family: 'Syne', sans-serif; font-size: .58rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding-bottom: 5px; }
+
+.time-table { width: 100%; border-collapse: collapse; font-size: .79rem; }
+.time-table td { padding: 5px 8px; border-bottom: 1px solid var(--border-l); vertical-align: top; line-height: 1.5; }
+.time-table tr:last-child td { border-bottom: none; }
+.time-table td:first-child { color: var(--ink); width: 75%; }
+.time-table td:last-child { font-family: 'Syne', sans-serif; font-weight: 700; color: var(--pine); text-align: right; white-space: nowrap; }
+.time-total td { font-family: 'Syne', sans-serif; font-weight: 800; background: var(--warm-off); color: var(--forest) !important; font-size: .82rem; }
+.time-total td:last-child { color: var(--sage) !important; }
+
+/* ── SECTION DIVIDER ── */
+.section-rule { border: none; border-top: 1.5px dashed var(--border); margin: 20px 0 0; }
+
+/* ── SUMMARY ── */
+.summary-block { margin-top: 56px; padding-top: 32px; border-top: 2px solid var(--ink); }
+.summary-title { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 800; color: var(--forest); margin-bottom: 20px; letter-spacing: -.01em; }
+.summary-table { width: 100%; border-collapse: collapse; font-size: .83rem; }
+.summary-table th {
+  font-family: 'Syne', sans-serif; font-size: .6rem; font-weight: 800;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
+  padding: 8px 14px; border-bottom: 1.5px solid var(--border); text-align: left;
+}
+.summary-table td { padding: 10px 14px; border-bottom: 1px solid var(--border-l); vertical-align: middle; line-height: 1.4; }
+.summary-table tr:last-child td { border-bottom: none; }
+.summary-table tr:hover td { background: var(--warm-off); }
+.st-num { font-family: 'Syne', sans-serif; font-weight: 800; color: var(--mint); font-size: 1.1rem; }
+.st-name { font-weight: 500; }
+.st-time { font-family: 'Syne', sans-serif; font-weight: 700; color: var(--pine); white-space: nowrap; }
+.st-total td { font-family: 'Syne', sans-serif; font-weight: 800; background: var(--forest); color: var(--mint) !important; font-size: .9rem; }
+
+@media (max-width: 760px) {
+  .masthead { grid-template-columns: 1fr; }
+  .masthead-title { font-size: 2rem; }
+  .detail-grid { grid-template-columns: 1fr; }
+  .wf-table { font-size: .72rem; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ════════════════ MASTHEAD ════════════════ -->
+<div class="masthead">
+  <div>
+    <div class="masthead-eyebrow">Workflow MVP</div>
+    <h1 class="masthead-title">Eco-Locaux<br>Fonctionnalités MVP</h1>
+    <p class="masthead-subtitle">5 phases · workflow d'automatisation commerciale · prêt pour développement</p>
+  </div>
+  <div class="masthead-meta">
+    <div class="meta-pill">🌿 Eco-Locaux</div>
+    <div class="meta-stack">Stack technique <span class="stack-chip">Supabase</span> <span class="stack-chip" style="background:#e8f0fe;color:#1a56b0">Gmail API</span> <span class="stack-chip" style="background:#f3ebff;color:#5b21b6">Make</span></div>
+    <div class="meta-stat">5 fonctionnalités · ~13–16 jours de dev estimés</div>
+  </div>
+</div>
+
+<!-- ════════════════ LEGEND ════════════════ -->
+<div class="legend-bar">
+  <span class="leg-title">Priorité</span>
+  <div class="leg-group">
+    <div class="leg-item"><div class="leg-dot ld-must"></div>Must Have — bloquant MVP</div>
+    <div class="leg-item"><div class="leg-dot ld-should"></div>Should Have — important, non bloquant</div>
+    <div class="leg-item"><div class="leg-dot ld-could"></div>Could Have — valeur ajoutée post-MVP</div>
+    <div class="leg-item"><div class="leg-dot ld-v2" style="background:var(--rust)"></div>V2 — prévu version suivante</div>
+  </div>
+</div>
+
+<!-- ════════════════ NAV ════════════════ -->
+<div class="section-nav">
+  <a class="nav-item" href="#s00"><span class="nav-num">00</span> Authentification</a>
+  <a class="nav-item" href="#s01"><span class="nav-num">01</span> Sourcing</a>
+  <a class="nav-item" href="#s02"><span class="nav-num">02</span> Qualification</a>
+  <a class="nav-item" href="#s03"><span class="nav-num">03</span> Email & Relance</a>
+  <a class="nav-item" href="#s04"><span class="nav-num">04</span> Pipeline & RDV</a>
+</div>
+
+
+<!-- ════════════════ 00 — AUTHENTIFICATION ════════════════ -->
+<div class="section-header" id="s00">
+  <div class="section-num">00</div>
+  <div class="section-info">
+    <div class="section-name">Authentification</div>
+    <div class="section-sub">Accès sécurisé par commercial · tableau de bord directeur prévu en V2</div>
+  </div>
+  <div class="priority-badge pb-could">Could Have</div>
+</div>
+
+<table class="wf-table">
+  <thead>
+    <tr>
+      <th>Qui</th><th>Fonctionnalité</th><th>Action</th><th>Input</th><th>Output</th>
+      <th>Mode</th><th>Outil</th><th>Priorité</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="actor a-human">🧑‍💼 Commercial</span></td>
+      <td>Connexion sécurisée</td>
+      <td>Saisie identifiants</td>
+      <td>Login + mot de passe</td>
+      <td>Accès à la plateforme, nom du commercial affiché</td>
+      <td><span class="mode m-man">Manuel</span></td>
+      <td><div class="tools"><span class="chip ch-supa">Supabase Auth</span></div></td>
+      <td><span class="prio p-could">Could Have</span></td>
+    </tr>
+    <tr>
+      <td><span class="actor a-dir">👔 Directeur</span></td>
+      <td>Vue admin consolidée</td>
+      <td>Consultation tableau de bord équipe</td>
+      <td>Toutes les fiches — tous commerciaux</td>
+      <td>KPIs : mails envoyés · RDV planifiés · prospects contactés par commercial</td>
+      <td><span class="mode m-auto">Auto</span></td>
+      <td><div class="tools"><span class="chip ch-supa">Supabase</span></div></td>
+      <td><span class="prio p-v2">V2</span></td>
+    </tr>
+  </tbody>
+</table>
+<hr class="section-rule">
+
+
+<!-- ════════════════ 01 — SOURCING ════════════════ -->
+<div class="section-header" id="s01">
+  <div class="section-num">01</div>
+  <div class="section-info">
+    <div class="section-name">Sourcing</div>
+    <div class="section-sub">Paramétrage de la session · extraction automatique des données prospect</div>
+  </div>
+  <div class="priority-badge pb-must">Must Have</div>
+</div>
+
+<div class="func-name">🔍 "Nouvelle recherche"</div>
+
+<div class="constraint">
+  <span class="constraint-icon">📌</span>
+  <span><strong>Contrainte de lancement :</strong> chaque session de sourcing est limitée à <strong>5 contacts maximum par lancement</strong> — permet de contrôler la charge et de tester la qualité avant de scaler.</span>
+</div>
+
+<table class="wf-table">
+  <thead>
+    <tr>
+      <th>Qui</th><th>Fonctionnalité</th><th>Action</th><th>Input</th><th>Output</th>
+      <th>Mode</th><th>Outil</th><th>Priorité</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="actor a-human">🧑‍💼 Commercial</span></td>
+      <td>Saisie Activité</td>
+      <td>Sélection dans liste déroulante prédéfinie</td>
+      <td>Type : boulangerie · restaurant · pressing · hôtel · pizzéria…</td>
+      <td>Secteur d'activité confirmé</td>
+      <td><span class="mode m-man">Manuel</span></td>
+      <td><div class="tools"><span class="chip ch-supa">Supabase</span></div></td>
+      <td><span class="prio p-must">Must Have</span></td>
+    </tr>
+    <tr>
+      <td><span class="actor a-human">🧑‍💼 Commercial</span></td>
+      <td>Saisie Ville</td>
+      <td>Sélection dans liste déroulante des villes cibles</td>
+      <td>Ville ciblée</td>
+      <td>Ville confirmée</td>
+      <td><span class="mode m-man">Manuel</span></td>
+      <td><div class="tools"><span class="chip ch-supa">Supabase</span></div></td>
+      <td><span class="prio p-must">Must Have</span></td>
+    </tr>
+    <tr>
+      <td><span class="actor a-system">⚙️ Système</span></td>
+      <td>Récupération Note Google</td>
+      <td>Déclenchement automatique au lancement</td>
+      <td>Nom + ville de l'établissement</td>
+      <td>Note moyenne Google Maps affichée sur la fiche</td>
+      <td><span class="mode m-auto">Auto</span></td>
+      <td><div class="tools"><span class="chip ch-gmaps">Google Maps API</span></div></td>
+      <td><span class="prio p-should">Should Have</span></td>
+    </tr>
+    <tr>
+      <td><span class="actor a-system">⚙️ Système</span></td>
+      <td>Récupération Téléphone</td>
+      <td>Déclenchement automatique</td>
+      <td>Requête Google Maps Places</td>
+      <td>Numéro de téléphone affiché sur la fiche</td>
+      <td><span class="mode m-auto">Auto</span></td>
+      <td><div class="tools"><span class="chip ch-gmaps">Google Maps API</span></div></td>
+      <td><span class="prio p-should">Should Have</span></td>
+    </tr>
+    <tr>
+      <td><span class="actor a-system">⚙️ Système</span></td>
+      <td>Récupération Nom Gérant</td>
+      <td>Déclenchement automatique</td>
+      <td>SIRET / raison sociale via Pappers</td>
+      <td>Nom du gérant affiché sur la fiche</td>
+      <td><span class="mode m-auto">Auto</span></td>
+      <td><div class="tools"><span class="chip ch-supa">API Pappers</span></div></td>
+      <td><span class="prio p-should">Should Have</span></td>
+    </tr>
+    <tr>
+      <td><span class="actor a-system">⚙️ Système</span></td>
+      <td>Récupération Adresse Email</td>
+      <td>Déclenchement automatique</td>
+      <td>Recherche Pappers / web</td>
+      <td>Adresse email affichée sur la fiche</td>
+      <td><span class="mode m-auto">Auto</span></td>
+      <td><div class="tools"><span class="chip ch-supa">API Pappers</span></div></td>
+      <td><span class="prio p-must">Must Have</span></td>
+    </tr>
+    <tr>
+      <td><span class="actor a-system">⚙️ Système</span></td>
+      <td>Récupération CA</td>
+      <td>Déclenchement automatique</td>
+      <td>SIRET via Pappers</td>
+      <td>Chiffre d'affaires affiché</td>
+      <td><span class="mode m-auto">Auto</span></td>
+      <td><div class="tools"><span class="chip ch-supa">API Pappers</span></div></td>
+      <td><span class="prio p-should">Should Have</span></td>
+    </tr>
+    <tr>
+      <td><span class="actor a-system">⚙️ Système</span></td>
+      <td>Récupération Effectif</td>
+      <td>Déclenchement automatique</td>
+      <td>SIRET via Pappers</td>
+      <td>Effectif affiché</td>
+      <td><span class="mode m-auto">Auto</span></td>
+      <td><div class="tools"><span class="chip ch-supa">API Pappers</span></div></td>
+      <td><span class="prio p-could">Could Have</span></td>
+    </tr>
+    <tr>
+      <td><span class="actor a-system">⚙️ Système</span></td>
+      <td>Récupération Ancienneté</td>
+      <td>Déclenchement automatique</td>
+      <td>SIRET via Pappers</td>
+      <td>Date de création de l'entreprise affichée</td>
+      <td><span class="mode m-auto">Auto</span></td>
+      <td><div class="tools"><span class="chip ch-supa">API Pappers</span></div></td>
+      <td><span class="prio p-could">Could Have</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="detail-grid">
+  <div class="card card-ux">
+    <div class="card-head"><span class="card-icon">🎨</span><span class="card-label">Règles UX</span></div>
+    <div class="card-body">
+      <table class="ux-table">
+        <tr class="ux-head"><td>Règle</td><td>Alternative MVP</td></tr>
+        <tr><td>Formulaire court — 2 champs uniquement (activité + ville)</td><td>Ajout volume si besoin de cadrer la charge</td></tr>
+        <tr><td>Listes déroulantes fermées — pas de saisie libre</td><td>Recherche dans la liste si &gt; 10 entrées</td></tr>
+        <tr><td>Barre de progression pendant le sourcing (pas d'écran blanc)</td><td>Message "Recherche en cours…"</td></tr>
+        <tr><td>Récapitulatif post-lancement : <em>"5 prospects ajoutés · 0 doublons"</em></td><td>Non négociable</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="card card-time">
+    <div class="card-head"><span class="card-icon">⏱</span><span class="card-label">Estimation développement</span></div>
+    <div class="card-body">
+      <table class="time-table">
+        <tr><td>Interface formulaire (listes déroulantes + Supabase)</td><td>0,5 j</td></tr>
+        <tr><td>Intégration API Google Maps Places</td><td>0,5 j</td></tr>
+        <tr><td>Intégration API Pappers (gérant, email, CA)</td><td>1 j</td></tr>
+        <tr><td>Scénario Make : requête → parsing → injection Supabase</td><td>1 j</td></tr>
+        <tr><td>Tests volume réel + gestion erreurs API</td><td>0,5 j</td></tr>
+        <tr class="time-total"><td>Total estimé</td><td>3,5 – 4 j</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="warn">
+  <span class="warn-icon">⚠️</span>
+  <span>L'API Google Maps Places est <strong>payante au-delà de 200$/mois de crédit gratuit</strong>. Le volume MVP (5 contacts / lancement) reste largement dans la limite gratuite. À monitorer en phase de scale. Même vigilance sur Pappers selon le volume mensuel.</span>
+</div>
+<hr class="section-rule">
+
+
+<!-- ════════════════ 02 — QUALIFICATION ════════════════ -->
+<div class="section-header" id="s02">
+  <div class="section-num">02</div>
+  <div class="section-info">
+    <div class="section-name">Qualification & Ciblage</div>
+    <div class="section-sub">Dédoublonnage automatique · sélection manuelle par le commercial</div>
+  </div>
+  <div class="priority-badge pb-must">Must Have</div>
+</div>
+
+<table class="wf-table">
+  <thead>
+    <tr>
+      <th>Qui</th><th>Fonctionnalité</th><th>Action</th><th>Input</th><th>Output</th>
+      <th>Mode</th><th>Outil</th><th>Priorité</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="actor a-human">🧑‍💼 Commercial</span></td>
+      <td>Lancement dédoublonnage</td>
+      <td>Clic sur « Dédoublonner »</td>
+      <td>Nouveau listing vs base existante</td>
+      <td>Mise à jour lancée</td>
+      <td><span class="mode m-man">Manuel</span></td>
+      <td><div class="tools"><span class="chip ch-supa">Supabase</span></div></td>
+      <td><span class="prio p-must">Must Have</span></td>
+    </tr>
+    <tr>
+      <td><span class="actor a-system">⚙️ Système</span></td>
+      <td>Dédoublonnage automatique</td>
+      <td>Comparaison avec la base existante</td>
+      <td>Listing importé</td>
+      <td>« 5 prospects ajoutés · 0 doublons ignorés »</td>
+      <td><span class="mode m-auto">Auto</span></td>
+      <td><div class="tools"><span class="chip ch-supa">Supabase</span><span class="chip ch-make">Make</span></div></td>
+      <td><span class="prio p-must">Must Have</span></td>
+    </tr>
+    <tr>
+      <td><span class="actor a-system">⚙️ Système</span></td>
+      <td>Scoring automatique</td>
+      <td>Calcul du score après dédoublonnage</td>
+      <td>Note Google + CA + Effectif + Ancienneté</td>
+      <td>Score /100 affiché sur chaque fiche prospect</td>
+      <td><span class="mode m-auto">Auto</span></td>
+      <td><div class="tools"><span class="chip ch-supa">Supabase</span><span class="chip ch-make">Make</span></div></td>
+      <td><span class="prio p-v2">V2</span></td>
+    </tr>
+    <tr>
+      <td><span class="actor a-system">⚙️ Système</span></td>
+      <td>Qualification Nouveau Lead</td>
+      <td>Tagging automatique des nouveaux prospects</td>
+      <td>Listing dédoublonné</td>
+      <td>Statut « Nouveau Lead » + date de création appliqués</td>
+      <td><span class="mode m-auto">Auto</span></td>
+      <td><div class="tools"><span class="chip ch-supa">Supabase</span><span class="chip ch-make">Make</span></div></td>
+      <td><span class="prio p-must">Must Have</span></td>
+    </tr>
+    <tr>
+      <td><span class="actor a-human">🧑‍💼 Commercial</span></td>
+      <td>Sélection manuelle des prospects</td>
+      <td>Coche les établissements à contacter</td>
+      <td>Listing prospects</td>
+      <td>Prospects sélectionnés → statut « À contacter »</td>
+      <td><span class="mode m-man">Manuel</span></td>
+      <td><div class="tools"><span class="chip ch-supa">Supabase</span></div></td>
+      <td><span class="prio p-should">Should Have</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="warn" style="background:var(--cobalt-pale);border-color:#b0c4f0;color:var(--cobalt-dark);">
+  <span class="warn-icon">🗓️</span>
+  <span>Le <strong>scoring automatique</strong> est planifié en V2. Les critères de pondération seront définis avec Marc D. avant le sprint correspondant (proposition de base : Note Google 40% · CA 30% · Ancienneté 20% · Effectif 10%).</span>
+</div>
+<hr class="section-rule">
+
+
+<!-- ════════════════ 03 — EMAIL & RELANCE ════════════════ -->
+<div class="section-header" id="s03">
+  <div class="section-num">03</div>
+  <div class="section-info">
+    <div class="section-name">Email & Relance</div>
+    <div class="section-sub">Génération IA · validation humaine · envoi · relance J+5</div>
+  </div>
+  <div class="priority-badge pb-must">Must Have</div>
+</div>
+
+<div class="func-name">✉️ "Rédaction mail + validation avant envoi"</div>
+
+<table class="wf-table">
+  <thead>
+    <tr>
+      <th>Qui</th><th>Fonctionnalité</th><th>Action</th><th>Input</th><th>Output</th>
+      <th>Mode</th><th>Outil</th><th>Priorité</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="actor a-ia">🤖 IA + Système</span></td>
+      <td>Génération brouillon email</td>
+      <td>Lancement depuis la fiche prospect</td>
+      <td>Fiche complète : nom gérant · activité · note Google · adresse</td>
+      <td>Brouillon affiché en vue côte-à-côte : fiche à gauche · email à droite</td>
+      <td><span class="mode m-auto">Auto</span></td>
+      <td><div class="tools"><span class="chip ch-claude">API Claude</span></div></td>
+      <td><span class="prio p-must">Must Have</span></td>
+    </tr>
+    <tr>
+      <td><span class="actor a-human">🧑‍💼 Commercial</span></td>
+      <td>Relecture & modification</td>
+      <td>Ajuste librement le mail généré</td>
+      <td>Brouillon IA</td>
+      <td>Mail modifié affiché</td>
+      <td><span class="mode m-man">Manuel</span></td>
+      <td>—</td>
+      <td><span class="prio p-must">Must Have</span></td>
+    </tr>
+    <tr>
+      <td><span class="actor a-human">🧑‍💼 Commercial</span></td>
+      <td>Validation du mail</td>
+      <td>Clic sur « Valider »</td>
+      <td>Mail relu et corrigé</td>
+      <td>Statut « Validé » enregistré</td>
+      <td><span class="mode m-man">Manuel</span></td>
+      <td>—</td>
+      <td><span class="prio p-could">Could Have</span></td>
+    </tr>
+    <tr>
+      <td><span class="actor a-human">🧑‍💼 Commercial</span></td>
+      <td>Envoi du mail</td>
+      <td>Clic sur « Envoyer »</td>
+      <td>Mail validé</td>
+      <td>Mail envoyé · confirmation affichée avec date et heure</td>
+      <td><span class="mode m-man">Manuel</span></td>
+      <td><div class="tools"><span class="chip ch-gm">Gmail API</span><span class="chip ch-supa">Supabase</span></div></td>
+      <td><span class="prio p-must">Must Have</span></td>
+    </tr>
+    <tr>
+      <td><span class="actor a-system">⚙️ Système</span></td>
+      <td>Mise à jour base après envoi</td>
+      <td>Automatique post-envoi</td>
+      <td>Confirmation envoi Gmail</td>
+      <td>Date d'envoi · heure · statut « Email envoyé » enregistrés</td>
+      <td><span class="mode m-auto">Auto</span></td>
+      <td><div class="tools"><span class="chip ch-supa">Supabase</span></div></td>
+      <td><span class="prio p-must">Must Have</span></td>
+    </tr>
+    <tr>
+      <td><span class="actor a-system">⚙️ Système</span></td>
+      <td>Tracking ouverture / réponse</td>
+      <td>Surveillance automatique en arrière-plan</td>
+      <td>ID message Gmail</td>
+      <td>Statut mis à jour : « Ouvert » ou « Répondu » + date</td>
+      <td><span class="mode m-auto">Auto</span></td>
+      <td><div class="tools"><span class="chip ch-gm">Gmail API webhooks</span></div></td>
+      <td><span class="prio p-could">Could Have</span></td>
+    </tr>
+    <tr>
+      <td><span class="actor a-system">⚙️ Système</span></td>
+      <td>Planification relance J+5</td>
+      <td>Automatique après envoi email</td>
+      <td>Date d'envoi du mail</td>
+      <td>Tâche de relance créée dans l'agenda du commercial à J+5 ouvrable</td>
+      <td><span class="mode m-auto">Auto</span></td>
+      <td><div class="tools"><span class="chip ch-gcal">Google Calendar</span><span class="chip ch-supa">Supabase</span></div></td>
+      <td><span class="prio p-should">Should Have</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="detail-grid">
+  <div class="card card-ux">
+    <div class="card-head"><span class="card-icon">🎨</span><span class="card-label">Règles UX</span></div>
+    <div class="card-body">
+      <table class="ux-table">
+        <tr class="ux-head"><td>Règle</td><td>Alternative MVP</td></tr>
+        <tr><td>Vue côte-à-côte : fiche prospect gauche · email droit</td><td>Modal de prévisualisation si vue trop complexe</td></tr>
+        <tr><td>Validation en 1 clic, email lisible sans rouvrir la fiche</td><td>Overlay rapide</td></tr>
+        <tr><td>Édition inline du brouillon sans quitter la vue</td><td>Bouton "Modifier" → éditeur simple</td></tr>
+        <tr><td>Compteur emails en attente : <em>"3 emails à valider"</em></td><td>Badge sur l'onglet navigation</td></tr>
+        <tr><td>Relance J+5 dans Google Calendar avec nom + téléphone du prospect</td><td>Notification interne si pas de synchro Calendar</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="card card-time">
+    <div class="card-head"><span class="card-icon">⏱</span><span class="card-label">Estimation développement</span></div>
+    <div class="card-body">
+      <table class="time-table">
+        <tr><td>Intégration API Claude (génération brouillon)</td><td>0,5 j</td></tr>
+        <tr><td>Prompt engineering + template (variables prospect)</td><td>1 j</td></tr>
+        <tr><td>Vue côte-à-côte + éditeur inline</td><td>1 j</td></tr>
+        <tr><td>Connexion Gmail API + envoi + horodatage</td><td>0,5 j</td></tr>
+        <tr><td>Mise à jour automatique Supabase après envoi</td><td>0,5 j</td></tr>
+        <tr><td>Relance J+5 → Google Calendar API</td><td>0,5 j</td></tr>
+        <tr><td>Tests end-to-end</td><td>0,5 j</td></tr>
+        <tr class="time-total"><td>Total estimé</td><td>4,5 – 5 j</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="warn">
+  <span class="warn-icon">⚠️</span>
+  <span>Fonctionnalité la plus <strong>sensible du MVP</strong> : la qualité du prompt détermine directement le taux de réponse. Prévoir 1–2 sessions d'itération sur le prompt avec Sébastien avant de valider le template définitif. C'est elle qui délivre la promesse des 10–15% de taux de réponse. À valider également : l'équipe utilise-t-elle Gmail ou Outlook ?</span>
+</div>
+<hr class="section-rule">
+
+
+<!-- ════════════════ 04 — PIPELINE & RDV ════════════════ -->
+<div class="section-header" id="s04">
+  <div class="section-num">04</div>
+  <div class="section-info">
+    <div class="section-name">Pipeline de Vente & RDV</div>
+    <div class="section-sub">Vue Kanban · enrichissement après appel · gestion des rendez-vous</div>
+  </div>
+  <div class="priority-badge pb-must">Must Have</div>
+</div>
+
+<table class="wf-table">
+  <thead>
+    <tr>
+      <th>Qui</th><th>Fonctionnalité</th><th>Action</th><th>Input</th><th>Output</th>
+      <th>Mode</th><th>Outil</th><th>Priorité</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="actor a-human">🧑‍💼 Commercial</span></td>
+      <td>Vue Kanban 4 colonnes</td>
+      <td>Consultation du pipeline en un coup d'œil</td>
+      <td>Base Supabase — tous les prospects</td>
+      <td>Kanban : <strong>Nouveau Lead → À contacter → Email envoyé → RDV Planifié</strong></td>
+      <td><span class="mode m-man">Manuel</span></td>
+      <td><div class="tools"><span class="chip ch-supa">Supabase</span></div></td>
+      <td><span class="prio p-must">Must Have</span></td>
+    </tr>
+    <tr>
+      <td><span class="actor a-human">🧑‍💼 Commercial</span></td>
+      <td>Déplacement carte Kanban</td>
+      <td>Drag & drop ou bouton de changement de statut</td>
+      <td>Statut actuel du prospect</td>
+      <td>Carte déplacée dans la colonne cible · historique conservé</td>
+      <td><span class="mode m-man">Manuel</span></td>
+      <td><div class="tools"><span class="chip ch-supa">Supabase</span></div></td>
+      <td><span class="prio p-must">Must Have</span></td>
+    </tr>
+    <tr>
+      <td><span class="actor a-human">🧑‍💼 Commercial</span></td>
+      <td>Enrichissement fiche après appel</td>
+      <td>Note le résultat de l'appel sur la fiche</td>
+      <td>Résultat : intéressé · pas intéressé · à rappeler · RDV</td>
+      <td>Fiche mise à jour — statut · note libre · date de rappel éventuelle</td>
+      <td><span class="mode m-man">Manuel</span></td>
+      <td><div class="tools"><span class="chip ch-supa">Supabase</span></div></td>
+      <td><span class="prio p-must">Must Have</span></td>
+    </tr>
+    <tr>
+      <td><span class="actor a-human">🧑‍💼 Commercial</span></td>
+      <td>Saisie date & heure RDV</td>
+      <td>Si statut = RDV Planifié : saisit date + heure via date picker</td>
+      <td>Sélection date + heure</td>
+      <td>RDV enregistré sur la fiche + ajout automatique dans l'agenda</td>
+      <td><span class="mode m-man">Manuel</span></td>
+      <td><div class="tools"><span class="chip ch-supa">Supabase</span><span class="chip ch-gcal">Google Calendar</span></div></td>
+      <td><span class="prio p-must">Must Have</span></td>
+    </tr>
+    <tr>
+      <td><span class="actor a-system">⚙️ Système</span></td>
+      <td>Planification agenda suite RDV</td>
+      <td>Automatique après saisie date/heure</td>
+      <td>Date + heure + nom prospect + commercial</td>
+      <td>Événement créé dans l'agenda du commercial avec toutes les infos prospect</td>
+      <td><span class="mode m-auto">Auto</span></td>
+      <td><div class="tools"><span class="chip ch-gcal">Google Calendar API</span></div></td>
+      <td><span class="prio p-must">Must Have</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="detail-grid">
+  <div class="card card-ux">
+    <div class="card-head"><span class="card-icon">🎨</span><span class="card-label">Règles UX</span></div>
+    <div class="card-body">
+      <table class="ux-table">
+        <tr class="ux-head"><td>Règle</td><td>Alternative MVP</td></tr>
+        <tr><td>Kanban visible dès la connexion — vue par défaut</td><td>Icône de navigation dédiée</td></tr>
+        <tr><td>Chaque carte affiche : nom + note Google + statut + date dernier contact</td><td>Affichage minimal : nom + statut uniquement</td></tr>
+        <tr><td>Déplacement par drag & drop avec confirmation visuelle</td><td>Bouton "Changer statut" si drag & drop trop complexe</td></tr>
+        <tr><td>Note libre après appel : champ texte visible sans clic supplémentaire</td><td>Modal rapide accessible depuis la carte</td></tr>
+        <tr><td>Date picker natif pour la saisie du RDV — synchro Google Calendar immédiate</td><td>Notification interne si synchro Calendar non dispo</td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="card card-time">
+    <div class="card-head"><span class="card-icon">⏱</span><span class="card-label">Estimation développement</span></div>
+    <div class="card-body">
+      <table class="time-table">
+        <tr><td>Vue Kanban (4 colonnes, drag & drop, Supabase)</td><td>1,5 j</td></tr>
+        <tr><td>Enrichissement fiche après appel + champ note libre</td><td>0,5 j</td></tr>
+        <tr><td>Date picker + saisie RDV</td><td>0,5 j</td></tr>
+        <tr><td>Synchronisation Google Calendar API</td><td>0,5 j</td></tr>
+        <tr><td>Tests + ajustements UX</td><td>0,5 j</td></tr>
+        <tr class="time-total"><td>Total estimé</td><td>3,5 – 4 j</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+<hr class="section-rule">
+
+
+<!-- ════════════════ RÉCAPITULATIF ════════════════ -->
+<div class="summary-block">
+  <div class="summary-title">Récapitulatif MVP</div>
+  <table class="summary-table">
+    <thead>
+      <tr>
+        <th>#</th><th>Phase</th><th>Priorité</th><th>Qui</th><th>Durée estimée</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="st-num">00</td>
+        <td class="st-name">Authentification (Supabase Auth)</td>
+        <td><span class="prio p-could">Could Have</span></td>
+        <td>Commercial</td>
+        <td class="st-time">0,5 j</td>
+      </tr>
+      <tr>
+        <td class="st-num">01</td>
+        <td class="st-name">Sourcing automatique Google Maps + Pappers</td>
+        <td><span class="prio p-must">Must Have</span></td>
+        <td>Commercial + Système</td>
+        <td class="st-time">3,5 – 4 j</td>
+      </tr>
+      <tr>
+        <td class="st-num">02</td>
+        <td class="st-name">Qualification & Ciblage (dédoublonnage + sélection)</td>
+        <td><span class="prio p-must">Must Have</span></td>
+        <td>Commercial + Système</td>
+        <td class="st-time">1,5 – 2 j</td>
+      </tr>
+      <tr>
+        <td class="st-num">03</td>
+        <td class="st-name">Email IA + validation + envoi + relance J+5</td>
+        <td><span class="prio p-must">Must Have</span></td>
+        <td>IA + Commercial</td>
+        <td class="st-time">4,5 – 5 j</td>
+      </tr>
+      <tr>
+        <td class="st-num">04</td>
+        <td class="st-name">Pipeline Kanban + enrichissement appel + RDV</td>
+        <td><span class="prio p-must">Must Have</span></td>
+        <td>Commercial + Système</td>
+        <td class="st-time">3,5 – 4 j</td>
+      </tr>
+      <tr class="st-total">
+        <td colspan="4">Total MVP (hors V2 : scoring, vue admin)</td>
+        <td>13,5 – 15,5 jours</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">
+    <div style="flex:1;min-width:240px;background:var(--supa-pale);border:1px solid #b0e8d0;border-radius:8px;padding:12px 16px;">
+      <div style="font-family:'Syne',sans-serif;font-size:.62rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--supa-dark);margin-bottom:8px;">Stack technique MVP</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">
+        <span class="chip ch-supa">Supabase (BDD + Auth)</span>
+        <span class="chip ch-make">Make (automatisations)</span>
+        <span class="chip ch-claude">API Claude (génération IA)</span>
+        <span class="chip ch-gm">Gmail API (envoi + tracking)</span>
+        <span class="chip ch-gmaps">Google Maps API (sourcing)</span>
+        <span class="chip ch-gcal">Google Calendar (agenda)</span>
+      </div>
+    </div>
+    <div style="flex:1;min-width:240px;background:var(--rust-pale);border:1px solid #f5c0b0;border-radius:8px;padding:12px 16px;">
+      <div style="font-family:'Syne',sans-serif;font-size:.62rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--rust);margin-bottom:8px;">Prévu en V2</div>
+      <ul style="list-style:none;display:flex;flex-direction:column;gap:5px;font-size:.79rem;line-height:1.5;">
+        <li style="display:flex;align-items:center;gap:6px;"><span class="prio p-v2">V2</span> Scoring automatique des prospects</li>
+        <li style="display:flex;align-items:center;gap:6px;"><span class="prio p-v2">V2</span> Tableau de bord directeur (vue consolidée)</li>
+        <li style="display:flex;align-items:center;gap:6px;"><span class="prio p-v2">V2</span> Tracking ouverture / réponse email (Gmail webhooks)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>
