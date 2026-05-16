@@ -1,0 +1,85 @@
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+                              SYNTHÈSE CERTIFICATION RGPD & SÉCURITÉ - PROSPACTION ECO LOCAUX
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+📋 TESTS À RÉALISER                                    ✅ CRITÈRES CERTIFICATION (23 POINTS OBLIGATOIRES)            ⏱️ TIMELINE 4-6 SEMAINES
+
+RGPD (35 tests)                                         RGPD - 10 obligatoires                                       SEMAINE 1-2 (URGENT)
+├─ Consentement (Art. 7).......................4      ☐ Politique confidentialité en ligne                         ☐ Politique confidentiel
+├─ Transparence (Art. 13-14)....................6      ☐ Consentement explicite collecte données                   ☐ Banneau consentement
+├─ Droit d'accès (Art. 15)......................3      ☐ Droit d'accès aux données (export)                        ☐ HTTPS + HSTS
+├─ Rectification (Art. 16)......................3      ☐ Droit de suppression (compte)                             ☐ Clés API sécurisées
+├─ Droit à l'oubli (Art. 17)....................4      ☐ AIPD réalisée + documentée                                ☐ DPO désigné
+├─ Portabilité (Art. 20)........................3      ☐ DPA signés (Google, Anthropic, Vercel)                    │
+├─ Automatisation IA (Art. 22)..................3      ☐ Registre des traitements                                  SEMAINE 2-4 (CRITIQUE)
+├─ Contrats/AIPD (Art. 28, 30, 35).............5      ☐ Procédure incident < 72h établie                          ☐ Export données (Art. 15)
+├─ Incident/DPO (Art. 33-34, 37)................2      ☐ DPO désigné + accessible                                  ☐ Suppression compte (Art. 17)
+└─ Autres.....................................4      │                                                             ☐ MFA obligatoire (admin)
+                                                       Sécurité - 10 obligatoires                                   ☐ Headers sécurité
+SÉCURITÉ (40 tests ISO 27001)                         ☐ HTTPS + HSTS + TLS 1.2+                                    ☐ Signer DPA tiers
+├─ HTTPS/TLS..................................4      ☐ Mots de passe hashés (bcrypt/Argon2)                      │
+├─ Chiffrage au repos...........................6      ☐ Données sensibles chiffrées au repos                       SEMAINE 4-6 (IMPORTANT)
+├─ Gestion clés.................................4      ☐ MFA obligatoire (admin)                                    ☐ AIPD réalisée
+├─ Contrôle d'accès.............................6      ☐ RBAC + isolation données par user                         ☐ Logs audit (6+ mois)
+├─ Protection injection.........................4      ☐ Audit logs complets (6+ mois)                             ☐ Alertes anomalies
+├─ APIs.........................................3      ☐ Protection XSS/CSRF/SQL injection                         ☐ Pentesting
+├─ Logs audit...................................4      ☐ Backups chiffrées + testées                               ☐ Documentation
+└─ Backups.....................................5      ☐ Clés API sécurisées (env variables)
+                                                       ☐ Headers sécurité (CSP, X-Frame)
+TOTAL: 75 TESTS                                        │
+                                                       Légal - 3 obligatoires
+                                                       ☐ Mentions légales
+                                                       ☐ Conditions utilisation
+                                                       ☐ Cookie policy
+
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+🔴 RISQUES CRITIQUES (8)                              🟠 RISQUES HAUTS (10)                          🟡 ACTIONS PRIORITAIRES (5)
+
+1. SQL injection → fuite données contacts            1. Accès cross-user non-autorisé               1️⃣ Politique confidentialité (1-2 j)
+2. XSS → accès données utilisateur                  2. Mots de passe texte clair                   2️⃣ Banneau consentement (2-3 j)
+3. HTTPS non-sécurisé → interception données        3. Pas MFA admin                               3️⃣ HTTPS + TLS 1.2+ (1 j)
+4. Pas consentement (Art. 7)                        4. Clés API exposées en code                   4️⃣ Clés API env variables (1 j)
+5. Pas droit accès (Art. 15)                        5. CSRF attacks                                5️⃣ DPO accessible (1 j)
+6. Pas droit oubli (Art. 17)                        6. Données PII en logs                         │
+7. DPA non-signés (Art. 28)                         7. Backups non-chiffrées                       → 4-6 semaines total
+8. Violation incident > 72h (Art. 33)               8. Pas audit logs                              → 2 Dev + 1 Legal + 1 Security
+                                                     9. Pas AIPD
+                                                    10. Politique manquante
+
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+📊 MATRICE DE COUVERTURE                              🛠️ OUTILS DE TEST                              📞 CONTACTS CLÉS
+
+                  Unitaire | Intégration | Système   curl, nmap, openssl (HTTPS/TLS)               CNIL: www.cnil.fr
+Recherche.............✓        ✓           ✓         DBeaver, pgAdmin (Base données)               Template AIPD: cnil.fr/dpia-template
+Contacts.............✓        ✓           ✓         OWASP ZAP, Burp Suite (Sécurité)              OWASP Top 10: owasp.org/Top10
+Email IA.............✓        ✓           ✓         Chrome DevTools (Network, Console)            ISO 27001: iso.org/standard/27001
+Pipeline Kanban.....✓        ✓           ✓         Postman (API testing)                         SSL Labs: ssllabs.com/ssltest
+Agenda...............✓        ✓           ✓         SQL Map (SQL injection)
+Authentification.....✓        ✓           ✓         Nessus, Qualys (Vulnerability scan)
+Permissions..........✓        ✓           ✓         Git analyzer (Code security)
+
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+💡 POINTS CLÉS                                         ✅ CHECKLIST RAPIDE                            ⚖️ ARTICLES RGPD COUVERTS
+
+✓ RGPD ≠ Sécurité (les deux sont obligatoires)       ☐ Politique confidentiel + lien                Art. 7    - Consentement
+✓ Consentement Art. 7 = NON-NÉGOCIABLE              ☐ Banneau cookies (Accept/Refuse)             Art. 13-14 - Transparence
+✓ Droits personnels (accès, rectif, oubli) = FONCTIONNELS  ☐ Export données (CSV/JSON)           Art. 15   - Accès
+✓ DPA Art. 28 obligatoire avec tiers                ☐ Suppression compte                           Art. 16   - Rectification
+✓ HTTPS + MFA + Logs = base sécurité                ☐ AIPD documentée                              Art. 17   - Oubli
+✓ Incident < 72h = délai légal CNIL                 ☐ DPA signés (Google, Anthropic)              Art. 20   - Portabilité
+✓ Audit logs = preuve conformité                    ☐ Registre traitements                         Art. 22   - Automatisation
+✓ Pentesting externe = validation sécurité          ☐ HTTPS + TLS 1.2+ + HSTS                      Art. 28   - Contrats DPA
+                                                     ☐ Mots de passe bcrypt/Argon2                 Art. 30   - Registre
+                                                     ☐ MFA admin obligatoire                       Art. 33-34 - Incident
+                                                     ☐ Logs audit (6+ mois)                        Art. 35   - AIPD
+                                                     ☐ Protection XSS/CSRF/SQL                     Art. 37   - DPO
+
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+📝 NOTES: Juridiction France (RGPD + CNIL) | Stack: Node.js/React/Vercel | Données: Contacts 3 ans, Logs 6+ mois, RDV 7 ans | Tiers: Google, Anthropic
+Version 1.0 | Créé: 2026-05-16
+
+═══════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════
