@@ -1,0 +1,204 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+  .vpc-wrap {
+    font-family: 'DM Sans', sans-serif;
+    background: #f0faf4;
+    border-radius: 16px;
+    padding: 24px 20px 20px;
+  }
+  .vpc-title {
+    font-family: 'DM Serif Display', serif;
+    text-align: center;
+    font-size: 20px;
+    font-weight: 400;
+    color: #1b4332;
+    margin-bottom: 20px;
+    letter-spacing: 0.02em;
+  }
+  /* Layout global : produit en haut, client en dessous sur toute la largeur */
+  .vpc-produit {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .vpc-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 13px 15px;
+    border: 1px solid #c8e6d0;
+  }
+  .vpc-card-blue {
+    background: #fff;
+    border-radius: 12px;
+    padding: 13px 15px;
+    border: 1px solid #bfdbfe;
+  }
+  .card-title {
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    margin-bottom: 7px;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .ct-green { color: #2d6a4f; }
+  .ct-blue  { color: #1e3a8a; }
+  .vpc-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 3px; }
+  .vpc-list li { display: flex; align-items: flex-start; gap: 5px; font-size: 11px; line-height: 1.45; color: #1a2e1a; }
+  .vpc-list li::before { content: '✓'; font-size: 10px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+  .check-green li::before { color: #2d6a4f; }
+  .check-blue  li::before { color: #2563eb; }
+  .func-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0 8px; }
+  .section-label { text-align: center; margin-bottom: 8px; }
+  .section-label span {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: 'DM Serif Display', serif; font-size: 14px;
+    padding: 4px 16px; border-radius: 30px; border: 1.5px solid;
+  }
+  .sl-green { color: #1b4332; border-color: #52b788; background: #f0faf4; }
+  .sl-warm  { color: #7a3510; border-color: #f4a261; background: #fff7ed; }
+  .vpc-bottom { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-top: 16px; }
+  .vpc-bottom-card { background: #fff; border-radius: 12px; padding: 12px 14px; border: 1px solid #c8e6d0; }
+  .vpc-bottom-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; display: flex; align-items: center; gap: 5px; }
+  .bt-green { color: #1b4332; } .bt-blue { color: #1e3a8a; } .bt-gray { color: #4a5568; }
+  .vpc-bottom-card p { font-size: 11px; color: #1a2e1a; line-height: 1.5; margin: 0; }
+  .vpc-bottom-card ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 3px; }
+  .vpc-bottom-card ul li { font-size: 11px; color: #1a2e1a; line-height: 1.4; display: flex; gap: 5px; align-items: flex-start; }
+  .vpc-bottom-card ul li::before { content: '·'; font-size: 14px; color: #52b788; flex-shrink: 0; margin-top: -2px; }
+</style>
+
+<div class="vpc-wrap">
+  <div class="vpc-title">Value Proposition Canvas — ECO-LOCAUX</div>
+
+  <!-- PRODUIT : 3 cartes sur toute la largeur -->
+  <div class="section-label"><span class="sl-green">📦 Produit</span></div>
+  <div class="vpc-produit">
+    <div class="vpc-card">
+      <div class="card-title ct-green">🏆 Bénéfices</div>
+      <ul class="vpc-list check-green">
+        <li>Gain de temps significatif</li>
+        <li>Prospection accélérée</li>
+        <li>Plus de rendez-vous</li>
+        <li>Meilleur suivi commercial</li>
+        <li>Moins d'oublis et d'erreurs</li>
+        <li>Plus d'efficacité commerciale</li>
+      </ul>
+    </div>
+    <div class="vpc-card-blue">
+      <div class="card-title ct-blue">😊 Expérience utilisateur</div>
+      <ul class="vpc-list check-blue">
+        <li>Simple et facile à utiliser</li>
+        <li>Fluide et intuitif</li>
+        <li>Rassurant et sécurisant</li>
+        <li>Sur mesure, adapté au terrain</li>
+        <li>Non technique (pas une usine à gaz)</li>
+      </ul>
+    </div>
+    <div class="vpc-card">
+      <div class="card-title ct-green">⚙️ Fonctionnalités</div>
+      <ul class="vpc-list check-green">
+        <li>Sourcing automatisé de prospects</li>
+        <li>Génération d'emails personnalisés</li>
+        <li>Centralisation des données</li>
+        <li>Pipeline de vente visuel</li>
+        <li>Suivi des relances</li>
+        <li>Gestion des rendez-vous</li>
+        <li>Scoring / priorisation prospects</li>
+        <li>Historique des interactions</li>
+        <li>Seuils de validation managériale</li>
+        <li>Interface simplifiée no-code</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- CLIENT : grand cercle pleine largeur -->
+  <div class="section-label"><span class="sl-warm">👤 Client</span></div>
+  <svg width="100%" viewBox="0 0 680 520" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="gc3" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#52b788"/>
+        <stop offset="100%" stop-color="#1b4332"/>
+      </linearGradient>
+      <clipPath id="clip3">
+        <circle cx="340" cy="260" r="248"/>
+      </clipPath>
+    </defs>
+
+    <!-- Cercle principal -->
+    <circle cx="340" cy="260" r="250" fill="#ffffff" stroke="#c8e6d0" stroke-width="1.5"/>
+
+    <!-- Fonds par zone -->
+    <path d="M340,260 L340,12 A248,248 0 0,0 92,260 Z" fill="#fff7ed" opacity="0.55" clip-path="url(#clip3)"/>
+    <path d="M340,260 L340,12 A248,248 0 0,1 588,260 Z" fill="#f5f3ff" opacity="0.55" clip-path="url(#clip3)"/>
+    <path d="M340,260 L92,260 A248,248 0 0,0 588,260 Z" fill="#eff6ff" opacity="0.45" clip-path="url(#clip3)"/>
+
+    <!-- Séparateurs -->
+    <line x1="340" y1="12" x2="340" y2="508" stroke="#c8e6d0" stroke-width="1"/>
+    <line x1="92"  y1="260" x2="588" y2="260" stroke="#c8e6d0" stroke-width="1"/>
+
+    <!-- Centre avatar -->
+    <circle cx="340" cy="260" r="32" fill="url(#gc3)"/>
+    <text x="340" y="269" text-anchor="middle" font-size="26">👤</text>
+
+    <!-- ══ DÉSIRS (haut gauche) — centre zone ≈ x=190, y=155 ══ -->
+    <text x="190" y="52"  text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" font-weight="700" fill="#c05621">❤️ DÉSIRS</text>
+    <text x="190" y="76"  text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11.5" fill="#1a2e1a">Prospecter vite et efficacement</text>
+    <text x="190" y="96"  text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11.5" fill="#1a2e1a">Mieux s'organiser</text>
+    <text x="190" y="116" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11.5" fill="#1a2e1a">Envoyer de meilleurs emails</text>
+    <text x="190" y="136" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11.5" fill="#1a2e1a">Obtenir plus de résultats</text>
+    <text x="190" y="156" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11.5" fill="#1a2e1a">Garder un outil simple</text>
+
+    <!-- ══ PEURS (haut droit) — centre zone ≈ x=490, y=155 ══ -->
+    <text x="490" y="52"  text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" font-weight="700" fill="#5b21b6">🛡️ PEURS</text>
+    <text x="490" y="76"  text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11.5" fill="#1a2e1a">Outil complexe à prendre en main</text>
+    <text x="490" y="96"  text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11.5" fill="#1a2e1a">Mauvaise adoption par l'équipe</text>
+    <text x="490" y="116" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11.5" fill="#1a2e1a">Perte de contrôle du processus</text>
+    <text x="490" y="136" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11.5" fill="#1a2e1a">Automatisation peu fiable</text>
+    <text x="490" y="156" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11.5" fill="#1a2e1a">Charge de travail supplémentaire</text>
+
+    <!-- ══ BESOINS (bas) — 3 colonnes ══ -->
+    <text x="340" y="298" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" font-weight="700" fill="#1d4ed8">🎯 BESOINS</text>
+
+    <!-- Col gauche -->
+    <text x="170" y="322" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11.5" font-weight="600" fill="#1d4ed8">Trouver</text>
+    <text x="170" y="340" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="#1a2e1a">• Prospects qualifiés</text>
+    <text x="170" y="358" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="#1a2e1a">• Bonnes informations</text>
+    <text x="170" y="376" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="#1a2e1a">• Contacts personnalisés</text>
+
+    <!-- Col centre -->
+    <text x="340" y="322" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11.5" font-weight="600" fill="#1d4ed8">Organiser</text>
+    <text x="340" y="340" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="#1a2e1a">• Pipeline commercial</text>
+    <text x="340" y="358" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="#1a2e1a">• Données centralisées</text>
+    <text x="340" y="376" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="#1a2e1a">• Relances structurées</text>
+
+    <!-- Col droite -->
+    <text x="510" y="322" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11.5" font-weight="600" fill="#1d4ed8">Suivre</text>
+    <text x="510" y="340" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="#1a2e1a">• Opportunités en cours</text>
+    <text x="510" y="358" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="#1a2e1a">• Interactions et historique</text>
+    <text x="510" y="376" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="#1a2e1a">• Résultats commerciaux</text>
+
+    <!-- Rebord -->
+    <circle cx="340" cy="260" r="250" fill="none" stroke="#c8e6d0" stroke-width="1.5"/>
+  </svg>
+
+  <!-- BAS -->
+  <div class="vpc-bottom">
+    <div class="vpc-bottom-card">
+      <div class="vpc-bottom-title bt-green">📦 Produit</div>
+      <p>Solution commerciale simple et sur mesure pour automatiser le sourcing, centraliser les données, personnaliser les emails et structurer le pipeline de prospection.</p>
+    </div>
+    <div class="vpc-bottom-card">
+      <div class="vpc-bottom-title bt-blue">👤 Client idéal</div>
+      <p>PME avec équipe commerciale réalisant encore une grande partie de sa prospection, de son suivi et de son organisation de façon manuelle et peu structurée.</p>
+    </div>
+    <div class="vpc-bottom-card">
+      <div class="vpc-bottom-title bt-gray">⇄ Substituts</div>
+      <ul>
+        <li>Excel, Word, Google Sheets</li>
+        <li>Carnets / notes personnelles</li>
+        <li>Outlook sans vraie méthode</li>
+        <li>CRM mal paramétré ou peu utilisé</li>
+      </ul>
+    </div>
+  </div>
+</div>
